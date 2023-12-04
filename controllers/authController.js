@@ -9,7 +9,9 @@ const register = async (input, res) => {
         /* input mengambil dari route hasil validasi 
            jadi di controller sudha bersih tidak ada logic pengecekan lagi
         */
+       console.log(input);
         const save = await Users.create(input)
+        console.log(save);
         res.json(save).status(200)
     } catch (error) {
         res.json(error).status(422)
