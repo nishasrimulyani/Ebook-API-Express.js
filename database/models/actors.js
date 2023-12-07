@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Actors extends Model {
     /**
@@ -13,27 +11,29 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  const ENUM_VAL = ['admin', 'reader']
-  Actors.init({
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    role: {
-      type: DataTypes.ENUM,
-      values: ENUM_VAL,
-      allowNull: false,
-      validate:{
-        notNull: {msg: 'Role is quired'},
-        isIn: {
-          args: [ENUM_VAL],
-          msg: "Role must be admin"
-        }
-
-      }
+  const ENUM_VAL = ["admin", "reader"];
+  Actors.init(
+    {
+      name: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
+      role: {
+        type: DataTypes.ENUM,
+        values: ENUM_VAL,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Role is quired" },
+          isIn: {
+            args: [ENUM_VAL],
+            msg: "Role must be admin",
+          },
+        },
+      },
+    },
+    {
+      sequelize,
+      modelName: "Actors",
     }
-  }, {
-    sequelize,
-    modelName: 'Actors',
-  });
+  );
   return Actors;
 };
