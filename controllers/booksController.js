@@ -74,7 +74,70 @@ const getBooks = async (req, res) => {
   }
 };
 
+const searchBooksByName = async (req, res) => {
+  try {
+    const bookName = req.params.bookName;
+
+    // logic pencarian bku utama
+    const books = await Books.findAll({
+      where: {
+        judul: {
+          [db.Sequelize.Op.like]: `%${bookName}%`
+        }
+      },
+      order: [['tahun_terbit', 'DESC']]
+    });
+
+    const booksWithPdfPath = books.map(book => ({
+      ...book.get(),
+      pdf_path: `${req.protocol}://${req.get("host")}/diRead/Books/${path.basename(book.pdf)}`,
+    }));
+
+    // logic rekomendasi area
+    let recommendations = [];
+    if (books.length > 0) {
+      // logic rekomendari by kemiripan juudul
+      const searchPattern = `${bookName.substring(0, 3)}%`;
+      recommendations = await Books.findAll({
+        where: {
+          judul: {
+            [db.Sequelize.Op.like]: searchPattern
+          },
+          id: {
+            [db.Sequelize.Op.notIn]: books.map(book => book.id)
+          }
+        },
+        order: [['tahun_terbit', 'DESC']],
+        limit: 5
+      });
+    } else {
+      // buku terbaru jika tidak ada yang mirip
+      recommendations = await Books.findAll({
+        order: [['tahun_terbit', 'DESC']],
+        limit: 5
+      });
+    }
+
+    const recommendationsWithPdfPath = recommendations.map(book => ({
+      ...book.get(),
+      pdf_path: `${req.protocol}://${req.get("host")}/diRead/Books/${path.basename(book.pdf)}`,
+    }));
+
+
+    res.status(200).json({
+      searchResults: booksWithPdfPath.length > 0 ? booksWithPdfPath : 'No books found',
+      recommendations: recommendationsWithPdfPath
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
 module.exports = {
   storeBooksCsv,
   getBooks,
+  searchBooksByName,
 };

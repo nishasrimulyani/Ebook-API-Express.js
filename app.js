@@ -19,8 +19,8 @@ app.use(serveStatic(path.join(__dirname, "Books")));
 app.use(serveStatic(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/actors", actorRouter);
-app.use("/books", booksRouter);
+// app.use("/users", usersRouter);
+// app.use("/actors", actorRouter);
+// app.use("/books", booksRouter);
 
 module.exports = app;
